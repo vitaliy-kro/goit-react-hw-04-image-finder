@@ -1,16 +1,68 @@
-export const App = () => {
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
-  );
-};
+import { Component } from 'react';
+import { Dna } from 'react-loader-spinner';
+import { Searchbar } from './Searchbar';
+import * as API from './API/API';
+import { ImageGallery } from './ImageGallery';
+
+export class App extends Component {
+  state = {
+    images: [],
+    search: null,
+    page: 1,
+    isLoading: false,
+  };
+  async componentDidUpdate(_, prevState) {
+    const { page, search } = this.state;
+    try {
+      if (prevState.page !== page) {
+        this.setState({ isLoading: true });
+        const getImages = await API.getItems(search, page);
+        this.setState(prev => {
+          return { images: [...prev.images, ...getImages] };
+        });
+        this.setState({ isLoading: false });
+      }
+    } catch (error) {
+      console.log('Whoops,something go wrong ;( Reload the page and try again');
+    }
+  }
+  handleSubmit = async ({ search }) => {
+    try {
+      this.setState({ isLoading: true });
+      const getImages = await API.getItems(search, this.state.page);
+
+      this.setState({
+        images: getImages,
+        search,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.log('Whoops,something go wrong,try again');
+      this.setState({ isLoading: false });
+    }
+  };
+  handleLoadMore = () => {
+    this.setState(prev => {
+      return { page: prev.page + 1 };
+    });
+  };
+  render() {
+    const { images, isLoading } = this.state;
+    const { handleSubmit, handleLoadMore } = this;
+    return (
+      <>
+        <Searchbar onSubmit={handleSubmit}></Searchbar>
+        <Dna
+          visible={isLoading}
+          height="300"
+          width="300"
+          wrapperStyle={{
+            display: 'block',
+            margin: '0 auto',
+          }}
+        />
+        <ImageGallery images={images} loadMore={handleLoadMore} />
+      </>
+    );
+  }
+}
