@@ -6,6 +6,6 @@ export const getItems = async (value, page) => {
   const getItems = await axios.get(
     `/?key=${API_KEY}&image_type=photo&per_page=12&q=${value}&page=${page}&orientation=horizontal`
   );
-  console.log('getItems', getItems);
+
   return getItems.data.hits;
 };

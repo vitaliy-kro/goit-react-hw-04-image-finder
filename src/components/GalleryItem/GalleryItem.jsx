@@ -21,11 +21,8 @@ export class GalleryItem extends Component {
     }
   };
   handleBackdropClick = e => {
-    console.log(e);
     if (e.target === e.currentTarget) {
-      console.log('Click backdrop!');
       this.setState({ isModalOpen: false });
-      console.log('After setState Click backdrop!');
     }
   };
   render() {
@@ -33,8 +30,8 @@ export class GalleryItem extends Component {
     const { isModalOpen } = this.state;
     const { webformatURL, tags, largeImageURL } = this.props;
     return (
-      <Item onClick={handleModalOpen}>
-        <Image src={webformatURL} alt={tags} />
+      <Item>
+        <Image onClick={handleModalOpen} src={webformatURL} alt={tags} />
         {isModalOpen && (
           <ModalWindow
             imageSrc={largeImageURL}

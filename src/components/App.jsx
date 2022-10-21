@@ -3,7 +3,6 @@ import { Dna } from 'react-loader-spinner';
 import { Searchbar } from './Searchbar';
 import * as API from './API/API';
 import { ImageGallery } from './ImageGallery';
-
 export class App extends Component {
   state = {
     images: [],
