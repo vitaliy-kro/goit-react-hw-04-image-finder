@@ -31,6 +31,7 @@ export class App extends Component {
       this.setState({
         isLoading: true,
         search,
+        page: 1,
       });
 
       const getImages = await API.getItems(search);
