@@ -13,7 +13,7 @@ export class App extends Component {
   async componentDidUpdate(_, prevState) {
     const { page, search } = this.state;
     try {
-      if (prevState.page !== page) {
+      if (prevState.page !== page && prevState.search === search) {
         this.setState({ isLoading: true });
         const getImages = await API.getItems(search, page);
         this.setState(prev => {
@@ -23,16 +23,20 @@ export class App extends Component {
       }
     } catch (error) {
       console.log('Whoops,something go wrong ;( Reload the page and try again');
+      this.setState({ isLoading: false });
     }
   }
   handleSubmit = async ({ search }) => {
     try {
-      this.setState({ isLoading: true });
-      const getImages = await API.getItems(search, this.state.page);
+      this.setState({
+        isLoading: true,
+        search,
+      });
+
+      const getImages = await API.getItems(search);
 
       this.setState({
         images: getImages,
-        search,
         isLoading: false,
       });
     } catch (error) {
@@ -40,6 +44,7 @@ export class App extends Component {
       this.setState({ isLoading: false });
     }
   };
+
   handleLoadMore = () => {
     this.setState(prev => {
       return { page: prev.page + 1 };
