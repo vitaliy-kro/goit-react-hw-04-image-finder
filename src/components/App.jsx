@@ -1,73 +1,67 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Dna } from 'react-loader-spinner';
 import { Searchbar } from './Searchbar';
-import * as API from './API/API';
+import axios from 'axios';
 import { ImageGallery } from './ImageGallery';
-export class App extends Component {
-  state = {
-    images: [],
-    search: null,
-    page: 1,
-    isLoading: false,
-  };
-  async componentDidUpdate(_, prevState) {
-    const { page, search } = this.state;
-    try {
-      if (prevState.page !== page && prevState.search === search) {
-        this.setState({ isLoading: true });
-        const getImages = await API.getItems(search, page);
-        this.setState(prev => {
-          return { images: [...prev.images, ...getImages] };
-        });
-        this.setState({ isLoading: false });
+
+const API_KEY = '29676323-cbf3b0b0974f66dc50c141bea';
+axios.defaults.baseURL = 'https://pixabay.com/api';
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [search, setSearch] = useState(null);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!search) {
+      return;
+    }
+    const controller = new AbortController();
+
+    const getItems = async (value, page = 1) => {
+      try {
+        setIsLoading(true);
+        const getItems = await axios.get(
+          `/?key=${API_KEY}&image_type=photo&per_page=12&q=${value}&page=${page}&orientation=horizontal`,
+          { signal: controller.signal }
+        );
+        page === 1
+          ? setImages(getItems.data.hits)
+          : setImages(prevImages => [...prevImages, ...getItems.data.hits]);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.log('Whoops,something go wrong ;( Reload the page and try again');
-      this.setState({ isLoading: false });
-    }
-  }
-  handleSubmit = async ({ search }) => {
-    try {
-      this.setState({
-        isLoading: true,
-        search,
-        page: 1,
-      });
+    };
 
-      const getImages = await API.getItems(search);
+    getItems(search, page);
 
-      this.setState({
-        images: getImages,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.log('Whoops,something go wrong,try again');
-      this.setState({ isLoading: false });
-    }
+    return () => {
+      controller.abort();
+    };
+  }, [page, search]);
+
+  const handleSubmit = ({ search }) => {
+    setSearch(search);
+    setPage(1);
   };
 
-  handleLoadMore = () => {
-    this.setState(prev => {
-      return { page: prev.page + 1 };
-    });
-  };
-  render() {
-    const { images, isLoading } = this.state;
-    const { handleSubmit, handleLoadMore } = this;
-    return (
-      <>
-        <Searchbar onSubmit={handleSubmit}></Searchbar>
-        <Dna
-          visible={isLoading}
-          height="300"
-          width="300"
-          wrapperStyle={{
-            display: 'block',
-            margin: '0 auto',
-          }}
-        />
-        <ImageGallery images={images} loadMore={handleLoadMore} />
-      </>
-    );
-  }
-}
+  const handleLoadMore = () => setPage(prevPage => prevPage + 1);
+
+  return (
+    <>
+      <Searchbar onSubmit={handleSubmit}></Searchbar>
+      <Dna
+        visible={isLoading}
+        height="300"
+        width="300"
+        wrapperStyle={{
+          display: 'block',
+          margin: '0 auto',
+        }}
+      />
+      {!isLoading && <ImageGallery images={images} loadMore={handleLoadMore} />}
+    </>
+  );
+};
