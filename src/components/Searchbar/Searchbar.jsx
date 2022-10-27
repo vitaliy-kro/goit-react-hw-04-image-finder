@@ -1,6 +1,5 @@
 import { Formik } from 'formik';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { Notification } from 'components/Notifications';
 import { NotificationContainer } from 'react-notifications';
 
 import { Header, SearchForm, SearchField, Button } from './Searchbar.styled';
