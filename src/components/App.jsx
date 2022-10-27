@@ -20,7 +20,8 @@ export const App = () => {
 
     const getItems = async (value, page = 1) => {
       try {
-        setIsLoading(true);
+        if (page === 1) setIsLoading(true);
+
         const getItems = await axios.get(
           `/?key=${API_KEY}&image_type=photo&per_page=12&q=${value}&page=${page}&orientation=horizontal`,
           { signal: controller.signal }
