@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Item, Image } from './GalleryItem.styled';
 import { ModalWindow } from 'components/ModalWindow/ModalWindow';
+import { IProp } from './GalleryItem.interface';
 
-export const GalleryItem = ({ webformatURL, tags, largeImageURL }) => {
+export const GalleryItem: React.FC<IProp> = ({
+  webformatURL,
+  tags,
+  largeImageURL,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -12,7 +17,7 @@ export const GalleryItem = ({ webformatURL, tags, largeImageURL }) => {
     };
   }, [isModalOpen]);
 
-  const handleEscClose = e => {
+  const handleEscClose = (e: KeyboardEvent) => {
     if (e.code === 'Escape') {
       setIsModalOpen(false);
     }
@@ -27,7 +32,7 @@ export const GalleryItem = ({ webformatURL, tags, largeImageURL }) => {
       {isModalOpen && (
         <ModalWindow
           imageSrc={largeImageURL}
-          ImageAlt={tags}
+          imageAlt={tags}
           onBackdropClick={() => setIsModalOpen(false)}
         ></ModalWindow>
       )}

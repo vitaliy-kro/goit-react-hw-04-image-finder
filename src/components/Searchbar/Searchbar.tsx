@@ -1,19 +1,22 @@
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { NotificationContainer } from 'react-notifications';
-
+import { IProps, IFormValues } from './SearchBar.interface';
 import { Header, SearchForm, SearchField, Button } from './Searchbar.styled';
-export const Searchbar = ({ onSubmit }) => {
-  const Submit = (value, { resetForm }) => {
-    if (!value.search.trim()) {
+
+export const Searchbar: React.FC<IProps> = ({ onSubmit }) => {
+  const submit = (
+    { search }: IFormValues,
+    { resetForm }: FormikHelpers<IFormValues>
+  ) => {
+    if (!search.trim()) {
       console.log('Type something!');
     }
-    onSubmit(value);
+    onSubmit(search);
     resetForm();
   };
   return (
     <Header>
-      <Formik onSubmit={Submit} initialValues={{ search: '' }}>
+      <Formik onSubmit={submit} initialValues={{ search: '' }}>
         <SearchForm>
           <SearchField name="search" />
           <Button type="submit">
@@ -21,7 +24,6 @@ export const Searchbar = ({ onSubmit }) => {
           </Button>
         </SearchForm>
       </Formik>
-      <NotificationContainer />
     </Header>
   );
 };

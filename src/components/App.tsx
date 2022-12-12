@@ -7,8 +7,10 @@ import { ImageGallery } from './ImageGallery';
 const API_KEY = '29676323-cbf3b0b0974f66dc50c141bea';
 axios.defaults.baseURL = 'https://pixabay.com/api';
 export const App = () => {
-  const [images, setImages] = useState([]);
-  const [search, setSearch] = useState(null);
+  const [images, setImages] = useState<
+    { id: number; webformatURL: string; tags: string; largeImageURL: string }[]
+  >([]);
+  const [search, setSearch] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,7 +20,7 @@ export const App = () => {
     }
     const controller = new AbortController();
 
-    const getItems = async (value, page = 1) => {
+    const getItems = async (value: string, page = 1) => {
       try {
         if (page === 1) setIsLoading(true);
 
@@ -43,7 +45,7 @@ export const App = () => {
     };
   }, [page, search]);
 
-  const handleSubmit = ({ search }) => {
+  const handleSubmit = (search: string) => {
     setSearch(search);
     setPage(1);
   };
